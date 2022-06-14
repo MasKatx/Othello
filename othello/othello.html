@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="favicon.ico">
+    <title>Othello Game</title>
+    <style>
+        h2.sml {
+            margin: 0%;
+        }
+
+        table#bord {
+            background-color: rgb(17, 136, 17);
+            border-collapse:  collapse;
+        }
+
+        table#bord tr td{
+            width: 60px;
+            height: 60px;
+            text-align: center;
+            border: solid 1px;
+        }
+
+        input.b {
+            height: 70%;
+            width: 70%;
+            border-radius: 50%;
+            padding: 0;
+            -webkit-box-shadow: 0 5px 0 #b6b6b6;
+            box-shadow: 0 5px 0 #b6b6b6;
+            /* opacity: 0.8; */
+            animation: flash 3s linear infinite;
+        }
+
+        @keyframes flash {
+            0% {
+                opacity: 1;
+            }
+
+            25% {
+                opacity: 0.7;
+            }
+
+            50% {
+                opacity: 0;
+            }
+            
+            75% {
+                opacity: 0.7;
+            }
+            
+            100% {
+                opacity: 1;
+            }
+        }
+
+        input.bl {
+            background-color: black;
+            color: white;
+        }
+
+        input.wt {
+            border: none;
+            background-color: white;
+            color: black;
+        }
+
+        input.b:hover {
+            height: 70%;
+            width: 70%;
+            -webkit-transform: translate(0, 3px);
+            transform: translate(0, 3px);
+            -webkit-box-shadow: 0 2px 0 #b6b6b6;
+            box-shadow: 0 2px 0 #b6b6b6;
+        }
+
+        p.black {
+            color: black;
+            font-size: 250%;
+            margin: 0%;
+        }
+
+        p.white {
+            color: white;
+            font-size: 250%;
+            margin: 0%;
+        }
+    </style>  
+</head>
+<body>
+    <h2 class="sml">
+        {{ if eq $.WinFlg "b" }}
+            黒の勝利です
+        {{ else if eq $.WinFlg "w" }}
+            白の勝利です
+        {{ else if eq $.WinFlg "e" }}
+            引き分けです
+        {{ else }}
+
+            {{ if eq $.Order "b"}}
+                黒
+            {{ else }}
+                白
+            {{ end }}
+            の番です
+        
+        {{ end }}
+    </h2>
+
+    <form action="/othello" method="POST" enctype="multipart/form-data" name="buttonForm">
+        <table id="bord">
+            {{ range $i, $v := .Color }}
+            <tr>
+            {{ range $j, $value := $v }}
+            <td>
+            {{ if eq $value "b" }}
+            <p class="black">●</p>
+            {{ else if eq $value "w" }}
+            <p class="white">●</p>
+            {{ else if eq $value "ok" }}
+                {{ if eq $.Order "b"}}
+                <input type="button" name="{{ $i }}{{ $j }}" value="{{ $i }}-{{ $j }}" id="button{{ $i }}{{ $j }}" onClick="setButton(this.value)" class="b bl">
+                {{ else }}
+                <input type="button" name="{{ $i }}{{ $j }}" value="{{ $i }}-{{ $j }}" id="button{{ $i }}{{ $j }}" onClick="setButton(this.value)" class="b wt">
+                {{ end }}
+            {{ else }}
+            
+            {{ end }}
+            </td>
+            {{ end }}
+            </tr>
+            {{ end }}
+        </table>
+        {{ range $i, $v := .Color }}
+        {{ range $j, $value := $v }}
+        <input type="radio" id="{{ $i }}-{{ $j }}" name="radio" value="{{ $i }}{{ $j }}" style="display: none;">
+
+        {{ if eq $value "ok" }}
+        <input type="text" id="{{ $i }}/{{ $j }}" name="text{{ $i }}{{ $j }}" value="" style="display: none;">
+        {{ else }}
+        <input type="text" id="{{ $i }}/{{ $j }}" name="text{{ $i }}{{ $j }}" value="{{ $value }}" style="display: none;">
+        {{ end }}
+
+        {{ end }}
+        {{ end }}
+        <input type="text" id="order" name="order" value="{{ $.Order }}" style="display: none;">
+    </form>
+</body>
+<script>
+    function setButton(str){
+        document.getElementById(str).checked = true;
+        document.buttonForm.submit();
+    }
+    window.onload = function(){
+        document.getElementById("0-0").checked = true;
+        document.getElementById("0-0").checked = false;
+    }
+</script>
+</html>
